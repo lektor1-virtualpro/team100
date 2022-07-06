@@ -1,0 +1,32 @@
+---
+- name: Install some Windows features
+  hosts: all
+  gather_facts: no
+  tasks:
+  - name: Install common features to all ...
+    ansible.windows.win_feature:
+      name:
+      - DNS
+      - Telnet-Client
+      - Windows-Server-Backup
+      include_sub_features: yes
+      include_management_tools: yes
+    register: win_feature
+
+  - name: Reboot if installing features requires it
+    ansible.windows.win_reboot:
+    when: win_feature.reboot_required
+
+  - name: Install features for WHITE group ...
+    ansible.windows.win_feature:
+      name:
+      - GPMC
+      include_sub_features: yes
+      include_management_tools: yes
+    register: win_feature_white
+    when: inventory_hostname in groups["white"]
+    
+    
+  - name: WHITE server reboot when required
+    ansible.windows.win_reboot:
+    when: inventory_hostname in groups["white"] and win_feature_white.reboot_required

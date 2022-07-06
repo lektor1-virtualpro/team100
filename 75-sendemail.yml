@@ -1,0 +1,38 @@
+---
+- name: Execute Powershell script
+  hosts: all
+  gather_facts: no
+  tasks: 
+  - name: Run a PowerShell script to send email
+    ansible.windows.win_powershell:
+      script: |
+        [CmdletBinding()]
+        param (
+            [String] $smtpServer,
+            [String] $From,
+            [String] $To,
+            [String] $Subject,
+            [String] $Body
+        )
+        
+        try {
+        	$msg = new-object Net.Mail.MailMessage
+        	$smtp = new-object Net.Mail.SmtpClient($smtpServer)
+        	$msg.From = $From
+        	$msg.ReplyTo = $From
+        	$msg.To.Add($To)
+        	$msg.subject = $Subject
+        	$msg.body = $Body
+        	$smtp.Send($msg)
+        	"Message sent."
+        	exit 0 # success
+        } catch {
+        	"Error in line $($_.InvocationInfo.ScriptLineNumber): $($Error[0])"
+        	exit 1
+        }
+      parameters:
+        smtpServer: "192.168.90.21"
+        From: "student105@virtualpro.cz"
+        To: "radovan@virtualpro.cz"
+        Subject: "Server Hello"
+        Body: "Mail from {{ inventory_hostname }}"

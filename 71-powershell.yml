@@ -1,0 +1,19 @@
+---
+- name: Execute Powershell script
+  hosts: all
+  gather_facts: no
+  tasks: 
+  - name: Run a PowerShell command
+    ansible.windows.win_powershell:
+      script: |
+        [CmdletBinding()]
+        param (
+            [String]
+            $Path,
+            [Switch]
+            $Force
+        )
+        New-Item -Path $Path -ItemType Directory -Force:$Force
+      parameters:
+        Path: C:\temp
+        Force: true

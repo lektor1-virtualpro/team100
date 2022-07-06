@@ -1,0 +1,40 @@
+---
+- name: Working with users
+  hosts: all
+  vars:
+    dir_name: C:\Development
+  tasks: 
+  - name: Create a group
+    win_group:
+      name: DevGroup
+      description: Development Group
+  - name: Create u user
+    win_user:
+      name: '{{ item.USER }}'
+      password: '{{ item.PASSWORD }}'
+      groups: 
+      - DevGroup
+      - Users
+      update_password: on_create
+      password_never_expires: yes
+    loop:
+    - { USER: 'User1', PASSWORD: 'Pa$$w0rd1' }
+    - { USER: 'User2', PASSWORD: 'Pa$$w0rd2' }
+    - { USER: 'User3', PASSWORD: 'Pa$$w0rd3' }
+  - name: Create '{{ dir_name }}' folder
+    win_file:
+      path: '{{ dir_name }}'
+      state: directory
+  - name: Set ACL for '{{ dir_name }}' folder
+    win_acl:
+      path: '{{ dir_name }}'
+      rights: FullControl
+      state: present
+      user: DevGroup
+      type: allow
+  - name: Share '{{ dir_name }}' folder
+    win_share:
+      name: Development
+      path: '{{ dir_name }}'
+      list: yes
+      full: Everyone

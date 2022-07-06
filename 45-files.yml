@@ -1,0 +1,71 @@
+---
+- name: Working with files
+  hosts: all
+  gather_facts: no 
+  vars:
+    dir_name: C:\Development
+    file_name: empty.txt
+    group_name: DevGroup
+    share_name: Development
+  tasks:
+  - name: Create local folder "{{ dir_name }}" 
+    ansible.windows.win_file:
+      path: "{{ dir_name }}"
+      state: directory
+  - name: Create empty file "{{ file_name }}"
+    ansible.windows.win_file:
+      path: "{{ dir_name }}\\{{ file_name }}"
+      state: touch
+  #- name: Clean ACL for folder "{{ dir_name }}"
+  #  ansible.windows.win_acl:
+  #    path: "{{ dir_name }}"
+  #    user: "{{ group_name }}"
+  #    type: allow
+  #    rights: "{{ item }}"
+  #    state: absent
+  #  loop:
+  #  - AppendData
+  #  - ChangePermissions
+  #  - CreateDirectories
+  #  - CreateFiles
+  #  - Delete
+  #  - AppendData
+  #  - ChangePermissions
+  #  - CreateDirectories
+  #  - CreateFiles
+  #  - Delete
+  #  - DeleteSubdirectoriesAndFiles
+  #  - ExecuteFile
+  #  - FullControl
+  #  - ListDirectory
+  #  - Modify
+  #  - Read
+  #  - ReadAndExecute
+  #  - ReadAttributes
+  #  - ReadData
+  #  - ReadExtendedAttributes
+  #  - ReadPermissions
+  #  - Synchronize
+  #  - TakeOwnership
+  #  - Traverse
+  #  - Write
+  #  - WriteAttributes
+  #  - WriteData
+  #  - WriteExtendedAttributes 
+  - name: Setup ACL for folder "{{ dir_name }}"
+    ansible.windows.win_acl:
+      path: "{{ dir_name }}"
+      user: "{{ group_name }}"
+      type: allow
+      rights: Modify
+      state: present
+  - name: Share folder "{{ dir_name }}"
+    ansible.windows.win_share:
+      name: "{{ share_name }}"
+      path: "{{ dir_name }}"
+      full: Everyone
+  - name: Copy some files
+    ansible.windows.win_copy:
+      src: files
+      dest: "{{ dir_name }}"
+      backup: no 

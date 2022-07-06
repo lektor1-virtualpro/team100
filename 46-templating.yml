@@ -1,0 +1,12 @@
+---
+- name: Copy file from template
+  gather_facts: no
+  hosts: all
+  vars:
+    dir_name: C:\Development
+    ServerName: "{{ inventory_hostname }}"
+  tasks:
+  - name: Create Server INI file
+    ansible.windows.win_template:
+      src: templates/server.ini.j2
+      dest: "{{ dir_name }}\\server.ini"

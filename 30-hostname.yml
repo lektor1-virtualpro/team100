@@ -1,0 +1,13 @@
+---
+- name: Setup hostname
+  hosts: all
+  tasks:
+  - name: Setup Windows hostname
+    win_hostname:
+      name: '{{ inventory_hostname }}'
+    notify: win_reboot
+
+  handlers:
+  - name: win_reboot
+    win_reboot: 
+

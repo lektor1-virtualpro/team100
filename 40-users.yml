@@ -1,0 +1,21 @@
+---
+- name: Working with users
+  hosts: all
+  tasks:
+  - name: Create a group
+    win_group:
+      name: DevGroup
+      description: Development Group
+  - name: Create users
+    win_user:
+      name: '{{ item.username }}'
+      password: '{{ item.password }}'
+      groups:
+      - Users
+      - DevGroup
+      update_password: on_create
+      password_never_expires: yes
+    loop:
+    - { username: 'User1', password: 'Pa$$w0rd1' }
+    - { username: 'User2', password: 'Pa$$w0rd2' }
+    - { username: 'User3', password: 'Pa$$w0rd3' }

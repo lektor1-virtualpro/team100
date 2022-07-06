@@ -1,0 +1,30 @@
+---
+- name: Install software
+  hosts: all
+  tasks: 
+  - name: Install common Utilities by Choco
+    win_chocolatey:
+      name: 
+      - mremoteng
+      - adobereader
+      - putty.install
+      state: latest
+  - name: Install sw for bigmem systems
+    win_chocolatey:
+      name:
+      - notepadplusplus.install
+    when: ( ansible_memtotal_mb > 5120 ) and ( ansible_memtotal_mb < 10240 )
+  - name: Install sw from LAN
+    win_package: 
+      path: '\\192.168.90.136\install\vlc-3.0.17.4-win64.exe'
+      product_id: "VLC media player"
+      arguments:
+      - /L=1033
+      - /S 
+      state: present
+    become: yes
+    become_method: runas
+    become_flags: logon_type=new_credentials logon_flags=netcredentials_only
+    vars:
+      ansible_become_user: Administrator
+      ansible_become_password: Pa$$w0rd

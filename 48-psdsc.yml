@@ -1,0 +1,22 @@
+---
+- name: DSC test
+  hosts: all
+  tasks:
+  - name: Create file with multiple attributes
+    ansible.windows.win_dsc:
+      resource_name: File
+      DestinationPath: C:\ansible\dsc
+      Attributes: # can also be a comma separated string, e.g. 'Hidden, System'
+      - Hidden
+      - System
+      Ensure: Present
+      Type: Directory
+  - name: Create user
+    ansible.windows.win_dsc:
+      resource_name: User
+      UserName: Carl
+      FullName: Carl von Bahnhof
+      Password_username: Bahnhof
+      Password_password: password123$
+      PasswordChangeRequired: false
+

@@ -1,0 +1,18 @@
+---
+- name: Module output to UNC
+  hosts: srv-105-1
+  gather_facts: no
+  tasks: 
+  - name: Run a command
+    ansible.windows.win_command: whoami
+    register: cmd_out
+  - name: copy output to UNC
+    ansible.windows.win_copy:
+      content: "cmd output: {{ cmd_out.stdout }}exec time: {{ cmd_out.delta }} s"
+      dest: \\srv-105-2\Development\whoami-1.txt
+    become: True
+    become_method: runas
+    become_flags: logon_type=new_credentials logon_flags=netcredentials_only
+    vars:
+      ansible_become_user: Administrator
+      ansible_become_pass: Pa$$w0rd
